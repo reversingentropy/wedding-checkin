@@ -1,10 +1,12 @@
-const scriptURL = "__SCRIPT_URL__"; 
+const FETCH_URL = "/.netlify/functions/fetch-guests";
+const SUBMIT_URL = "/.netlify/functions/submit-checkin";
+
 let guests = [];
 let guestData = null;
 
 window.addEventListener("DOMContentLoaded", async () => {
-  console.log("Starting fetch from:", scriptURL);
-  const res = await fetch(scriptURL);
+  console.log("Starting fetch from:", FETCH_URL);
+  const res = await fetch(FETCH_URL);
   const data = await res.json();
   if (data.status === "success") {
     guests = data.guests;
@@ -115,7 +117,7 @@ async function submitCheckIn() {
   };
 
   try {
-    const res = await fetch(scriptURL, {
+    const res = await fetch(SUBMIT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain"
