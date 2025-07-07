@@ -1,6 +1,7 @@
 # Wedding Guest Check-In App
 
-This is a web-based guest check-in application created for Enshuo and Jolene's wedding. It allows guests to search their names, confirm attendance, leave a message, and receive event and seating information.
+This is a web-based guest check-in application created for [Enshuo and Jolene's wedding](https://esjo2026-ido.netlify.app). It allows guests to search their names, confirm attendance, leave a message, and receive event and seating information.
+
 
 ## Features
 
