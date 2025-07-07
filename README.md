@@ -42,9 +42,9 @@ This should be a valid endpoint returning a JSON guest list for fetch-guests, an
 
 ## Deploy on Netlify
 
--Connect the repository to Netlify
--Set the environment variable above
--Deploy the site
+- Connect the repository to Netlify
+- Set the environment variable above
+- Deploy the site
 
 Notes
 - The guest list is fetched from a google sheets via Google Scripts URL
