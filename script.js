@@ -1,3 +1,4 @@
+const scriptURL = "__SCRIPT_URL__"; 
 let guests = [];
 let guestData = null;
 
