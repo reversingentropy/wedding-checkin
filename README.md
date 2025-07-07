@@ -25,6 +25,7 @@ index.html # Main HTML file
 script.js # Client-side logic for guest search and check-in
 fetch-guests.js # Serverless function to fetch guest data
 submit-checkin.js # Serverless function to handle check-in submission
+google-script.js #Sample google script
 
 ## Setup and Deployment
 
