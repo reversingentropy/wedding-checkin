@@ -1,5 +1,5 @@
-const FETCH_URL = "/.netlify/functions/fetch-guests";
-const SUBMIT_URL = "/.netlify/functions/submit-checkin";
+const FETCH_URL = "/.netlify/functions/fetch-guests.js";
+const SUBMIT_URL = "/.netlify/functions/submit-checkin.js";
 
 let guests = [];
 let guestData = null;
