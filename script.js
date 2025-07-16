@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 let debounceTimer;
 document.getElementById("guestName").addEventListener("input", () => {
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(handleSearch, 150);
+  debounceTimer = setTimeout(handleSearch, 75);
 });
 
 function handleSearch() {
