@@ -3,22 +3,32 @@ const SUBMIT_URL = "/.netlify/functions/submit-checkin";
 
 let guests = [];
 let guestData = null;
+let lastRenderedNames = [];
 
 window.addEventListener("DOMContentLoaded", async () => {
   console.log("Starting fetch from:", FETCH_URL);
   const res = await fetch(FETCH_URL);
   const data = await res.json();
   if (data.status === "success") {
-    guests = data.guests;
+    // Preprocess lowercase names for faster search
+    guests = data.guests.map(g => ({
+      ...g,
+      nameLower: g.name.toLowerCase()
+    }));
     console.log("Guest list loaded:", guests.length);
   } else {
     console.error("Failed to load guest list");
   }
 });
 
-// --- REPLACE your existing event listener with this one ---
-
+// ✅ Debounced input handling
+let debounceTimer;
 document.getElementById("guestName").addEventListener("input", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(handleSearch, 150);
+});
+
+function handleSearch() {
   const input = document.getElementById("guestName").value.toLowerCase().trim();
   const matchList = document.getElementById("matchList");
   matchList.innerHTML = "";
@@ -28,17 +38,15 @@ document.getElementById("guestName").addEventListener("input", () => {
 
   if (input.length < 2) return;
 
-  // 1. Split the user's input into separate search terms.
-  //    .filter(Boolean) removes any empty strings if the user types multiple spaces.
-  const searchTerms = input.split(' ').filter(Boolean);
+  const searchTerms = input.split(" ").filter(Boolean);
 
   const matches = guests
-    .filter(g => {
-      const guestNameLower = g.name.toLowerCase();
-      // 2. Check if EVERY search term is included in the guest's name.
-      return searchTerms.every(term => guestNameLower.includes(term));
-    })
+    .filter(g => searchTerms.every(term => g.nameLower.includes(term)))
     .slice(0, 3);
+
+  const currentNames = matches.map(g => g.name);
+  if (arraysEqual(lastRenderedNames, currentNames)) return;
+  lastRenderedNames = currentNames;
 
   matches.forEach(g => {
     const btn = document.createElement("button");
@@ -46,15 +54,15 @@ document.getElementById("guestName").addEventListener("input", () => {
     btn.className = "bg-white border border-gray-300 px-4 py-2 mb-2 w-full text-left rounded hover:bg-gray-50";
     btn.addEventListener("click", () => {
       selectGuest(g);
-      document.getElementById("matchList").innerHTML = ""; // Clear search options
-      
-      // This part is for visual feedback, no change needed here.
-      document.querySelectorAll("#matchList button").forEach(b => b.classList.remove("bg-blue-100", "font-semibold"));
-      btn.classList.add("bg-blue-100", "font-semibold");
+      matchList.innerHTML = "";
     });
     matchList.appendChild(btn);
   });
-});
+}
+
+function arraysEqual(a, b) {
+  return a.length === b.length && a.every((val, i) => val === b[i]);
+}
 
 function selectGuest(mainGuest) {
   guestData = mainGuest;
@@ -81,18 +89,15 @@ function selectGuest(mainGuest) {
   const checkInBtn = document.getElementById("checkInBtn");
 
   function updateButtonState() {
-    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-    checkInBtn.disabled = !anyChecked;
+    checkInBtn.disabled = !Array.from(checkboxes).some(cb => cb.checked);
   }
 
   checkboxes.forEach(cb => cb.addEventListener("change", updateButtonState));
   updateButtonState();
 
-  // Remove previous event listeners to avoid stacking
   checkInBtn.replaceWith(checkInBtn.cloneNode(true));
   document.getElementById("checkInBtn").addEventListener("click", submitCheckIn);
   checkInSection.scrollIntoView({ behavior: "smooth", block: "start" });
-
 }
 
 async function submitCheckIn() {
@@ -165,10 +170,10 @@ function showConfirmation(checkedCount, tableNo) {
       </div>
     </div>
   `;
-confirmation.classList.remove("hidden");
 
-document.getElementById("checkInSection").classList.add("hidden");
-document.getElementById("matchList").classList.add("hidden");
-document.getElementById("guestName").classList.add("hidden");
-confirmation.scrollIntoView({ behavior: "smooth" });
+  confirmation.classList.remove("hidden");
+  document.getElementById("checkInSection").classList.add("hidden");
+  document.getElementById("matchList").classList.add("hidden");
+  document.getElementById("guestName").classList.add("hidden");
+  confirmation.scrollIntoView({ behavior: "smooth" });
 }
